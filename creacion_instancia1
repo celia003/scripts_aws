@@ -1,0 +1,25 @@
+AMI_ID="ami-0d421d84814b7d51c"
+INSTANCE_TYPE="t3.small"
+SECURITY_GROUP_ID="sg-0bf7d88ad53a5d530"
+SUBNET_ID="subnet-0c23abf914c7219f6"
+INSTANCE_NAME=$1
+COUNT=$2
+USER_DATA=$(cat <<EOF
+#!/bin/bash
+# Actualiza el sistema
+yum update -y
+# Instala los paquetes necesarios
+yum install -y httpd
+# Inicia el servicio de Apache
+systemctl start httpd
+# Habilita el servicio de Apache para que inicie en el arranque
+systemctl enable httpd
+# Crea una página web de ejemplo
+echo "<html><h1>Hola, Mundo desde EC2</h1></html>" > /var/www/html/index.html
+EOF
+)
+
+
+INSTANCE_ID=$(aws ec2 run-instance --image-id $AMI_ID --count $COUNT --instance-type $INSTANCE_TYPE --security-group-ids $SECURITY_GROUP_ID --subnet-id $SUBNET_ID --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$INSTANCE_NAME}]" --user-data "$USER_DATA" --query "Instances[0].InstanceId" --output text)
+echo "Instance ID: $INSTANCE_ID"
+echo "$INSTANCE_NAME created succesfully."
