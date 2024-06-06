@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Nombre de la instancia pasada como parámetro
+INSTANCE_NAME=$1
+
+# Verifica si el parámetro fue proporcionado
+if [ -z "$INSTANCE_NAME" ]; then
+  echo "Error: No instance name provided."
+  echo "Usage: $0 <instance-name>"
+  exit 1
+fi
+
+# Busca el ID de la instancia con el nombre proporcionado
+INSTANCE_ID=$(aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=$INSTANCE_NAME" \
+  --query "Reservations[*].Instances[*].InstanceId" \
+  --output text)
+
+# Verifica si se encontró la instancia
+if [ -z "$INSTANCE_ID" ]; then
+  echo "No instance found with name $INSTANCE_NAME"
+  exit 1
+fi
+
+# Termina la instancia
+aws ec2 terminate-instances --instance-ids $INSTANCE_ID
+
+echo "Instance $INSTANCE_NAME ($INSTANCE_ID) terminated successfully."
