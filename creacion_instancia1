@@ -9,13 +9,16 @@ USER_DATA=$(cat <<EOF
 # Actualiza el sistema
 yum update -y
 # Instala los paquetes necesarios
-yum install -y httpd
-# Inicia el servicio de Apache
-systemctl start httpd
-# Habilita el servicio de Apache para que inicie en el arranque
-systemctl enable httpd
-# Crea una página web de ejemplo
-echo "<html><h1>Hola, Mundo desde EC2</h1></html>" > /var/www/html/index.html
+yum install -y docker
+# Inicia el servicio de docker
+systemctl start docker
+# Habilita el servicio de docker para que inicie en el arranque
+systemctl enable docker
+# Instalamos docker compose
+sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+git clone https://github.com/celia003/docker-app.git
+cd docker-app && docker-compose up -d
 EOF
 )
 
