@@ -20,6 +20,6 @@ EOF
 )
 
 
-INSTANCE_ID=$(aws ec2 run-instance --image-id $AMI_ID --count $COUNT --instance-type $INSTANCE_TYPE --security-group-ids $SECURITY_GROUP_ID --subnet-id $SUBNET_ID --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$INSTANCE_NAME}]" --user-data "$USER_DATA" --query "Instances[0].InstanceId" --output text)
+INSTANCE_ID=$(aws ec2 run-instances --image-id $AMI_ID --count $COUNT --instance-type $INSTANCE_TYPE --security-group-ids $SECURITY_GROUP_ID --subnet-id $SUBNET_ID --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$INSTANCE_NAME}]" --user-data "$USER_DATA" --query "Instances[0].InstanceId" --output text)
 echo "Instance ID: $INSTANCE_ID"
 echo "$INSTANCE_NAME created succesfully."
